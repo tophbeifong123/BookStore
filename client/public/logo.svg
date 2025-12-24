@@ -1,0 +1,26 @@
+<svg width="600" height="600" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shopping bag with book icon -->
+  <g transform="translate(100, 50)">
+    <!-- Bag outline -->
+    <path d="M120 140 L120 420 L380 420 L380 140" stroke="#003B6F" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="90" y="140" width="320" height="280" rx="15" fill="none" stroke="#003B6F" stroke-width="20"/>
+    
+    <!-- Bag handles -->
+    <path d="M160 140 C160 90, 190 70, 220 70 C250 70, 280 90, 280 140" stroke="#003B6F" stroke-width="20" fill="none" stroke-linecap="round"/>
+    
+    <!-- Open book in center -->
+    <path d="M140 240 C140 240, 170 220, 250 220 C330 220, 360 240, 360 240 L360 360 C360 360, 330 340, 250 340 C170 340, 140 360, 140 360 Z" fill="white" stroke="#003B6F" stroke-width="18"/>
+    
+    <!-- Book spine -->
+    <line x1="250" y1="220" x2="250" y2="340" stroke="#003B6F" stroke-width="18"/>
+    
+    <!-- Book pages lines -->
+    <path d="M140 260 C170 245, 220 240, 250 240" stroke="#003B6F" stroke-width="3" fill="none"/>
+    <path d="M250 240 C280 240, 330 245, 360 260" stroke="#003B6F" stroke-width="3" fill="none"/>
+    <path d="M140 290 C170 275, 220 270, 250 270" stroke="#003B6F" stroke-width="3" fill="none"/>
+    <path d="M250 270 C280 270, 330 275, 360 290" stroke="#003B6F" stroke-width="3" fill="none"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="300" y="520" font-family="Arial, sans-serif" font-size="80" font-weight="bold" fill="#003B6F" text-anchor="middle">BOOKSTORE</text>
+</svg>
