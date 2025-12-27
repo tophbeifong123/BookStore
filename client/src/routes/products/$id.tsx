@@ -8,95 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-// Sample product data (in real app, this would come from an API/loader)
-const productsData: Record<
-  string,
-  {
-    id: string;
-    title: string;
-    author: string;
-    price: number;
-    category: string;
-    description: string;
-    isbn: string;
-    pages: number;
-    published: string;
-  }
-> = {
-  "1": {
-    id: "1",
-    title: "The Great Gatsby",
-    author: "F. Scott Fitzgerald",
-    price: 299,
-    category: "Classic Literature",
-    description:
-      "A classic American novel set in the Jazz Age that explores themes of decadence, idealism, resistance to change, and excess. It tells the story of the mysterious millionaire Jay Gatsby and his obsession with the beautiful former debutante Daisy Buchanan.",
-    isbn: "978-0-7432-7356-5",
-    pages: 180,
-    published: "1925",
-  },
-  "2": {
-    id: "2",
-    title: "1984",
-    author: "George Orwell",
-    price: 349,
-    category: "Science Fiction",
-    description:
-      "A dystopian social science fiction novel and cautionary tale about the dangers of totalitarianism. The story takes place in an imagined future in the year 1984 when much of the world has fallen victim to perpetual war, omnipresent government surveillance, and propaganda.",
-    isbn: "978-0-452-28423-4",
-    pages: 328,
-    published: "1949",
-  },
-  "3": {
-    id: "3",
-    title: "To Kill a Mockingbird",
-    author: "Harper Lee",
-    price: 279,
-    category: "Classic Literature",
-    description:
-      "A novel about the serious issues of rape and racial inequality told through the eyes of young Scout Finch. The story is set in the fictional town of Maycomb, Alabama, during the Great Depression.",
-    isbn: "978-0-06-112008-4",
-    pages: 324,
-    published: "1960",
-  },
-  "4": {
-    id: "4",
-    title: "Pride and Prejudice",
-    author: "Jane Austen",
-    price: 259,
-    category: "Romance",
-    description:
-      "A romantic novel that charts the emotional development of the protagonist Elizabeth Bennet, who learns the error of making hasty judgments and comes to appreciate the difference between superficial goodness and actual goodness.",
-    isbn: "978-0-14-143951-8",
-    pages: 432,
-    published: "1813",
-  },
-  "5": {
-    id: "5",
-    title: "The Hobbit",
-    author: "J.R.R. Tolkien",
-    price: 399,
-    category: "Fantasy",
-    description:
-      "A fantasy novel that follows the quest of home-loving Bilbo Baggins, the hobbit, to win a share of the treasure guarded by a dragon, Smaug. The story is a prelude to The Lord of the Rings.",
-    isbn: "978-0-547-92822-7",
-    pages: 310,
-    published: "1937",
-  },
-  "6": {
-    id: "6",
-    title: "Harry Potter and the Philosopher's Stone",
-    author: "J.K. Rowling",
-    price: 450,
-    category: "Fantasy",
-    description:
-      "The first novel in the Harry Potter series follows Harry Potter, a young wizard who discovers his magical heritage on his eleventh birthday, when he receives a letter of acceptance to Hogwarts School of Witchcraft and Wizardry.",
-    isbn: "978-0-7475-3269-9",
-    pages: 223,
-    published: "1997",
-  },
-};
+import { PRODUCTS, getProductById } from "@/constants/products";
 
 export default function ProductDetailPage() {
   // Get the dynamic :id parameter from the URL
@@ -104,7 +16,7 @@ export default function ProductDetailPage() {
   const navigate = useNavigate();
 
   // Get the product data based on the id
-  const product = id ? productsData[id] : null;
+  const product = id ? getProductById(id) : null;
 
   // If product not found, show error
   if (!product) {
@@ -241,13 +153,13 @@ export default function ProductDetailPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            {Object.keys(productsData).map((productId) => (
-              <Link key={productId} to={`/products/${productId}`}>
+            {PRODUCTS.map((product) => (
+              <Link key={product.id} to={`/products/${product.id}`}>
                 <Button
-                  variant={productId === id ? "default" : "outline"}
+                  variant={product.id === id ? "default" : "outline"}
                   size="sm"
                 >
-                  Product {productId}
+                  Product {product.id}
                 </Button>
               </Link>
             ))}

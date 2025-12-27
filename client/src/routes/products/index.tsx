@@ -8,52 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-// Sample product data
-const products = [
-  {
-    id: "1",
-    title: "The Great Gatsby",
-    author: "F. Scott Fitzgerald",
-    price: 299,
-    category: "Classic Literature",
-  },
-  {
-    id: "2",
-    title: "1984",
-    author: "George Orwell",
-    price: 349,
-    category: "Science Fiction",
-  },
-  {
-    id: "3",
-    title: "To Kill a Mockingbird",
-    author: "Harper Lee",
-    price: 279,
-    category: "Classic Literature",
-  },
-  {
-    id: "4",
-    title: "Pride and Prejudice",
-    author: "Jane Austen",
-    price: 259,
-    category: "Romance",
-  },
-  {
-    id: "5",
-    title: "The Hobbit",
-    author: "J.R.R. Tolkien",
-    price: 399,
-    category: "Fantasy",
-  },
-  {
-    id: "6",
-    title: "Harry Potter and the Philosopher's Stone",
-    author: "J.K. Rowling",
-    price: 450,
-    category: "Fantasy",
-  },
-];
+import { PRODUCTS } from "@/constants/products";
 
 export default function ProductsPage() {
   return (
@@ -70,16 +25,23 @@ export default function ProductsPage() {
       <Card className="bg-secondary/30 border-secondary">
         <CardContent className="pt-6">
           <p className="text-sm text-muted-foreground">
-            💡 <strong>Dynamic Routing Demo:</strong> Click on any product to see
-            dynamic routing in action (e.g., <code className="bg-muted px-1.5 py-0.5 rounded text-xs">/products/1</code>,{" "}
-            <code className="bg-muted px-1.5 py-0.5 rounded text-xs">/products/2</code>)
+            💡 <strong>Dynamic Routing Demo:</strong> Click on any product to
+            see dynamic routing in action (e.g.,{" "}
+            <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
+              /products/1
+            </code>
+            ,{" "}
+            <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
+              /products/2
+            </code>
+            )
           </p>
         </CardContent>
       </Card>
 
       {/* Products Grid */}
       <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product) => (
+        {PRODUCTS.map((product) => (
           <Link
             key={product.id}
             to={`/products/${product.id}`}
@@ -111,10 +73,12 @@ export default function ProductsPage() {
       </section>
 
       {/* Empty State Example */}
-      {products.length === 0 && (
+      {PRODUCTS.length === 0 && (
         <Card className="text-center py-12">
           <CardContent>
-            <p className="text-muted-foreground text-lg mb-4">No products found</p>
+            <p className="text-muted-foreground text-lg mb-4">
+              No products found
+            </p>
             <Link to="/">
               <Button variant="outline">Return to Home</Button>
             </Link>
