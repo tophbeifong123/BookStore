@@ -13,19 +13,18 @@ export default function NotFoundPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center px-4">
-      <Card className="max-w-md w-full text-center">
+    <section className="flex min-h-[60vh] items-center justify-center px-4">
+      <Card className="w-full max-w-md text-center">
         <CardHeader className="space-y-4 pt-12">
-          <div className="text-8xl font-bold text-primary/20 mb-4">404</div>
+          <div className="text-primary/20 mb-4 text-8xl font-bold">404</div>
           <CardTitle className="text-3xl">Page Not Found</CardTitle>
           <CardDescription className="text-base">
-            Oops! The page you're looking for doesn't exist. It might have been
-            moved or deleted.
+            Oops! The page you're looking for doesn't exist. It might have been moved or deleted.
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-col justify-center gap-3 sm:flex-row">
             <Button onClick={() => navigate(-1)} variant="outline" size="lg">
               ← Go Back
             </Button>
@@ -36,23 +35,16 @@ export default function NotFoundPage() {
         </CardContent>
 
         <CardFooter className="flex-col space-y-3 border-t pt-6 pb-12">
-          <p className="text-sm text-muted-foreground">
-            You might be interested in:
-          </p>
-          <div className="flex flex-wrap gap-2 justify-center">
+          <p className="text-muted-foreground text-sm">You might be interested in:</p>
+          <div className="flex flex-wrap justify-center gap-2">
             <Link to="/products">
               <Button variant="ghost" size="sm">
                 Browse Products
               </Button>
             </Link>
-            <Link to="/about">
-              <Button variant="ghost" size="sm">
-                About Us
-              </Button>
-            </Link>
           </div>
         </CardFooter>
       </Card>
-    </div>
+    </section>
   );
 }

@@ -1,78 +1,56 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home, Info, ShoppingBag } from "lucide-react";
-
-// Navigation links configuration
-const navLinks = [
-  { path: "/", label: "Home", icon: Home },
-  { path: "/about", label: "About", icon: Info },
-  { path: "/products", label: "Products", icon: ShoppingBag },
-] as const;
+import { Search, BookOpen } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function RootLayout() {
-  const location = useLocation();
-
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
   return (
-    <div className="bg-background flex min-h-screen flex-col">
-      {/* Navigation Bar - Modern Teen Style */}
-      <header className="bg-background from-card/40 to-secondary/20 sticky top-0 z-50 mx-auto my-4 flex w-full max-w-1/2 rounded-full border border-white/40 bg-gradient-to-r shadow-sm backdrop-blur-xl">
-        {" "}
-        <nav className="container mx-auto px-6">
-          <div className="flex h-20 items-center justify-between">
-            {/* Logo */}
-            <Link
-              to="/"
-              className="group flex items-center gap-3 transition-transform duration-300 hover:scale-105"
-            >
-              <div className="relative">
-                <img src="/logo.svg" alt="BookStore Logo" className="h-12 w-12 drop-shadow-md" />
-                <div className="bg-primary/20 absolute inset-0 rounded-full opacity-0 blur-xl transition-all group-hover:opacity-100 group-hover:blur-2xl"></div>
-              </div>
-              <span className="from-primary via-primary bg-gradient-to-r to-blue-600 bg-clip-text text-2xl font-bold text-transparent">
-                BookStore
-              </span>
-            </Link>
+    <div className="bg-background text-foreground flex min-h-screen flex-col font-sans transition-colors duration-300">
+      {/* Minimal Header */}
+      <header className="bg-background/80 sticky top-5 z-50 mx-auto w-full max-w-1/2 rounded-full shadow-sm backdrop-blur-md transition-colors duration-300">
+        <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">
+            <span className="bg-primary text-primary-foreground rounded-lg p-1.5">
+              <BookOpen className="h-5 w-5" />
+            </span>
+            <span>AniRead</span>
+          </Link>
 
-            {/* Navigation Links - Modern Style */}
-            <div className="flex items-center gap-2">
-              {navLinks.map((link) => {
-                const Icon = link.icon;
-                return (
-                  <Link key={link.path} to={link.path}>
-                    <Button
-                      variant={isActive(link.path) ? "default" : "ghost"}
-                      size="sm"
-                      className="cursor-pointer rounded-full px-6 font-medium transition-all hover:scale-105"
-                    >
-                      <Icon className="mr-2 h-4 w-4" />
-                      {link.label}
-                    </Button>
-                  </Link>
-                );
-              })}
-            </div>
+          {/* Search Bar (Fake) */}
+          <div className="relative hidden max-w-md flex-1 md:flex">
+            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search manga, novels..."
+              className="bg-secondary/50 focus:ring-ring/20 h-10 w-full rounded-full border pr-4 pl-10 text-sm transition-all focus:ring-2 focus:outline-none"
+            />
           </div>
-        </nav>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link to="/products">
+              <Button variant="ghost" size="sm">
+                Browse
+              </Button>
+            </Link>
+            <Button size="sm" className="rounded-full px-6">
+              Login
+            </Button>
+          </div>
+        </div>
       </header>
 
-      {/* Page Content */}
-      <main className="container mx-auto flex-1 px-6 py-12">
+      {/* Main Content */}
+      <main className="flex-1">
         <Outlet />
       </main>
 
-      {/* Footer - Modern Style */}
-      <footer className="border-border/40 from-card via-secondary/10 to-card border-t bg-gradient-to-r">
-        <div className="container mx-auto px-6 py-8">
-          <div className="flex flex-col items-center gap-4">
-            <img src="/logo.svg" alt="BookStore" className="h-10 w-10 opacity-60" />
-            <p className="text-muted-foreground text-sm">
-              © 2025 BookStore. Built with React Router v7 + Tailwind CSS v4
-            </p>
-          </div>
+      {/* Simple Footer */}
+      <footer className="text-muted-foreground border-t py-8 text-center text-sm">
+        <div className="container mx-auto px-4">
+          <p>© 2025 AniRead. Read Free Manga & Novels.</p>
         </div>
       </footer>
     </div>
