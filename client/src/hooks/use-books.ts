@@ -18,6 +18,16 @@ export function useBooks(query?: PaginationQuery) {
 }
 
 /**
+ * Hook to fetch current user's books
+ */
+export function useMyBooks(query?: PaginationQuery) {
+  return useQuery({
+    queryKey: [...queryKeys.books.list(query), "my"],
+    queryFn: () => booksService.getMyBooks(query),
+  });
+}
+
+/**
  * Hook to fetch featured books
  */
 export function useFeaturedBooks(limit = 5) {

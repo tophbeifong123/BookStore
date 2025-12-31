@@ -13,10 +13,24 @@ import type {
 
 export const booksService = {
   /**
-   * Get all books with pagination
+   * Create a new book
+   */
+  async create(data: CreateBookInput): Promise<Book> {
+    return apiClient.post<Book>("/books", data);
+  },
+
+  /**
+   * Get all books with pagination (Public)
    */
   async getAll(query?: PaginationQuery): Promise<PaginatedResponse<Book>> {
-    return apiClient.get<PaginatedResponse<Book>>("/books", query);
+    return apiClient.get<PaginatedResponse<Book>>("/books", query as any);
+  },
+
+  /**
+   * Get current user's books (including drafts)
+   */
+  async getMyBooks(query?: PaginationQuery): Promise<PaginatedResponse<Book>> {
+    return apiClient.get<PaginatedResponse<Book>>("/books/my-books", query as any);
   },
 
   /**
@@ -38,13 +52,6 @@ export const booksService = {
    */
   async getById(id: string): Promise<Book> {
     return apiClient.get<Book>(`/books/${id}`);
-  },
-
-  /**
-   * Create a new book
-   */
-  async create(data: CreateBookInput): Promise<Book> {
-    return apiClient.post<Book>("/books", data);
   },
 
   /**
@@ -70,3 +77,4 @@ export const booksService = {
 };
 
 export default booksService;
+```

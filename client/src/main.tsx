@@ -10,6 +10,8 @@ import HomePage from "./routes/home";
 import BooksPage from "./routes/books/index";
 import BookDetailPage from "./routes/books/$slug";
 import ReadChapterPage from "./routes/books/read";
+import CreateBookPage from "./routes/books/create";
+import MyBooksPage from "./routes/my-books/index";
 import LoginPage from "./routes/auth/login";
 import RegisterPage from "./routes/auth/register";
 import NotFoundPage from "./routes/not-found";
@@ -32,6 +34,14 @@ const router = createBrowserRouter([
             element: <BooksPage />,
           },
           {
+            path: "create",
+            element: <CreateBookPage />,
+          },
+          {
+            path: "edit/:id",
+            element: <CreateBookPage />,
+          },
+          {
             path: ":slug",
             element: <BookDetailPage />,
           },
@@ -40,6 +50,10 @@ const router = createBrowserRouter([
             element: <ReadChapterPage />,
           },
         ],
+      },
+      {
+        path: "my-books",
+        element: <MyBooksPage />,
       },
       {
         path: "login",

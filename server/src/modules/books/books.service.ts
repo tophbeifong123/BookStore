@@ -1,11 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
-import { Book, BookStatus } from './book.entity';
-import { Tag } from '../tags/tag.entity';
-import { CreateBookDto } from './dto/create-book.dto';
-import { UpdateBookDto } from './dto/update-book.dto';
-import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository, In } from "typeorm";
+import { Book, BookStatus } from "./book.entity";
+import { Tag } from "../tags/tag.entity";
+import { CreateBookDto } from "./dto/create-book.dto";
+import { UpdateBookDto } from "./dto/update-book.dto";
+import { PaginationQueryDto } from "../../common/dto/pagination-query.dto";
 
 @Injectable()
 export class BooksService {
@@ -13,32 +17,85 @@ export class BooksService {
     @InjectRepository(Book)
     private readonly bookRepository: Repository<Book>,
     @InjectRepository(Tag)
-    private readonly tagRepository: Repository<Tag>,
+    private readonly tagRepository: Repository<Tag>
   ) {}
 
   /**
    * Get all books with pagination
    */
   async findAll(query: PaginationQueryDto) {
-    const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'DESC' } = query;
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      sortBy = "createdAt",
+      sortOrder = "DESC",
+    } = query;
 
     const queryBuilder = this.bookRepository
-      .createQueryBuilder('book')
-      .leftJoinAndSelect('book.tags', 'tag');
+      .createQueryBuilder("book")
+      .leftJoinAndSelect("book.tags", "tag");
 
     // Search
     if (search) {
       queryBuilder.where(
-        'book.title ILIKE :search OR book.author ILIKE :search',
-        { search: `%${search}%` },
+        "book.title ILIKE :search OR book.author ILIKE :search",
+        { search: `%${search}%` }
       );
     }
 
     // Only published books for public
-    queryBuilder.andWhere('book.status = :status', { status: BookStatus.PUBLISHED });
+    queryBuilder.andWhere("book.status = :status", {
+      status: BookStatus.PUBLISHED,
+    });
 
     // Sorting
-    queryBuilder.orderBy(`book.${sortBy}`, sortOrder as 'ASC' | 'DESC');
+    queryBuilder.orderBy(`book.${sortBy}`, sortOrder as "ASC" | "DESC");
+
+    // Pagination
+    const skip = (page - 1) * limit;
+    queryBuilder.skip(skip).take(limit);
+
+    const [data, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Get books created by a specific user
+   */
+  async findByUser(userId: string, query: PaginationQueryDto) {
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      sortBy = "createdAt",
+      sortOrder = "DESC",
+    } = query;
+
+    const queryBuilder = this.bookRepository
+      .createQueryBuilder("book")
+      .leftJoinAndSelect("book.tags", "tag")
+      .where("book.createdBy = :userId", { userId });
+
+    // Search
+    if (search) {
+      queryBuilder.andWhere(
+        "(book.title ILIKE :search OR book.author ILIKE :search)",
+        { search: `%${search}%` }
+      );
+    }
+
+    // Sorting
+    queryBuilder.orderBy(`book.${sortBy}`, sortOrder as "ASC" | "DESC");
 
     // Pagination
     const skip = (page - 1) * limit;
@@ -63,8 +120,8 @@ export class BooksService {
   async findFeatured(limit = 5) {
     return this.bookRepository.find({
       where: { isFeatured: true, status: BookStatus.PUBLISHED },
-      relations: ['tags'],
-      order: { rating: 'DESC' },
+      relations: ["tags"],
+      order: { rating: "DESC" },
       take: limit,
     });
   }
@@ -75,7 +132,7 @@ export class BooksService {
   async findOne(id: string) {
     const book = await this.bookRepository.findOne({
       where: { id },
-      relations: ['tags'],
+      relations: ["tags"],
     });
 
     if (!book) {
@@ -91,7 +148,7 @@ export class BooksService {
   async findBySlug(slug: string) {
     const book = await this.bookRepository.findOne({
       where: { slug },
-      relations: ['tags'],
+      relations: ["tags"],
     });
 
     if (!book) {
@@ -104,10 +161,23 @@ export class BooksService {
   /**
    * Create a new book
    */
-  async create(createBookDto: CreateBookDto) {
+  async create(createBookDto: CreateBookDto, userId?: string) {
     const { tagIds, ...bookData } = createBookDto;
 
-    const book = this.bookRepository.create(bookData);
+    // Check if slug already exists
+    const existingBook = await this.bookRepository.findOne({
+      where: { slug: bookData.slug },
+    });
+    if (existingBook) {
+      throw new ConflictException(
+        `Book with slug "${bookData.slug}" already exists`
+      );
+    }
+
+    const book = this.bookRepository.create({
+      ...bookData,
+      createdBy: userId,
+    });
 
     // Attach tags if provided
     if (tagIds && tagIds.length > 0) {
@@ -129,9 +199,10 @@ export class BooksService {
 
     // Update tags if provided
     if (tagIds !== undefined) {
-      const tags = tagIds.length > 0
-        ? await this.tagRepository.find({ where: { id: In(tagIds) } })
-        : [];
+      const tags =
+        tagIds.length > 0
+          ? await this.tagRepository.find({ where: { id: In(tagIds) } })
+          : [];
       book.tags = tags;
     }
 
@@ -152,7 +223,7 @@ export class BooksService {
    * Increment view count
    */
   async incrementViewCount(id: string) {
-    await this.bookRepository.increment({ id }, 'viewCount', 1);
+    await this.bookRepository.increment({ id }, "viewCount", 1);
     return this.findOne(id);
   }
 }

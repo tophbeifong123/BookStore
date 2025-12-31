@@ -10,6 +10,8 @@ import {
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
+  UseGuards,
+  Request,
 } from "@nestjs/common";
 import {
   ApiTags,
@@ -17,12 +19,15 @@ import {
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiBearerAuth,
 } from "@nestjs/swagger";
 import { BooksService } from "./books.service";
 import { Book } from "./book.entity";
 import { CreateBookDto } from "./dto/create-book.dto";
 import { UpdateBookDto } from "./dto/update-book.dto";
 import { PaginationQueryDto } from "../../common/dto/pagination-query.dto";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { OptionalJwtAuthGuard } from "../auth/guards/optional-jwt-auth.guard";
 
 @ApiTags("books")
 @Controller("books")
@@ -34,6 +39,18 @@ export class BooksController {
   @ApiResponse({ status: 200, description: "Returns paginated list of books" })
   async findAll(@Query() query: PaginationQueryDto) {
     return this.booksService.findAll(query);
+  }
+
+  @Get("my-books")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Get current user's books" })
+  @ApiResponse({ status: 200, description: "Returns user's books" })
+  async findMyBooks(
+    @Request() req: { user: { id: string } },
+    @Query() query: PaginationQueryDto
+  ) {
+    return this.booksService.findByUser(req.user.id, query);
   }
 
   @Get("featured")
@@ -67,14 +84,22 @@ export class BooksController {
   }
 
   @Post()
+  @UseGuards(OptionalJwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Create a new book" })
   @ApiResponse({ status: 201, description: "Book created", type: Book })
   @ApiResponse({ status: 400, description: "Validation error" })
-  async create(@Body() createBookDto: CreateBookDto) {
-    return this.booksService.create(createBookDto);
+  async create(
+    @Request() req: { user?: { id: string } },
+    @Body() createBookDto: CreateBookDto
+  ) {
+    const userId = req.user?.id;
+    return this.booksService.create(createBookDto, userId);
   }
 
   @Patch(":id")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Update a book" })
   @ApiParam({ name: "id", description: "Book UUID" })
   @ApiResponse({ status: 200, description: "Book updated", type: Book })
@@ -87,6 +112,8 @@ export class BooksController {
   }
 
   @Delete(":id")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Delete a book" })
   @ApiParam({ name: "id", description: "Book UUID" })
