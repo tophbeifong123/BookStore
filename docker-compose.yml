@@ -1,5 +1,5 @@
-# Docker Compose for Book Store Application
-# Compatible with Podman: podman-compose up -d
+# Docker Compose for Book Store - PostgreSQL + NestJS
+# Compatible with Podman: podman compose up -d
 
 services:
   # PostgreSQL Database
@@ -29,29 +29,38 @@ services:
 
   # NestJS Backend API
   api:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
+    image: node:20-alpine
     container_name: bookstore_api
     restart: unless-stopped
+    working_dir: /app
     environment:
-      NODE_ENV: ${NODE_ENV:-development}
-      PORT: 3000
+      NODE_ENV: development
+      PORT: 8000
+      BASE_URL: http://localhost:8000
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
       DATABASE_USER: ${POSTGRES_USER:-bookstore}
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-bookstore_secret}
       DATABASE_NAME: ${POSTGRES_DB:-bookstore_db}
     ports:
-      - "${API_PORT:-3000}:3000"
+      - "8000:8000"
+    volumes:
+      - ./server:/app
+      - api_node_modules:/app/node_modules
+      - uploads_data:/app/uploads
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - bookstore_network
+    command: sh -c "npm install && npm run start:dev"
 
 volumes:
   postgres_data:
+    driver: local
+  api_node_modules:
+    driver: local
+  uploads_data:
     driver: local
 
 networks:
