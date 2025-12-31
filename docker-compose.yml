@@ -1,0 +1,59 @@
+# Docker Compose for Book Store Application
+# Compatible with Podman: podman-compose up -d
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: bookstore_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bookstore}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bookstore_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-bookstore_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-bookstore} -d ${POSTGRES_DB:-bookstore_db}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bookstore_network
+
+  # NestJS Backend API
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: bookstore_api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER:-bookstore}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-bookstore_secret}
+      DATABASE_NAME: ${POSTGRES_DB:-bookstore_db}
+    ports:
+      - "${API_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bookstore_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  bookstore_network:
+    driver: bridge
