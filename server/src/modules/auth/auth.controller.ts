@@ -4,7 +4,7 @@ import {
   Get,
   Body,
   UseGuards,
-  Request,
+  Req,
   HttpCode,
   HttpStatus,
 } from "@nestjs/common";
@@ -14,11 +14,21 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from "@nestjs/swagger";
+import { Request } from "express";
 import { AuthService } from "./auth.service";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
+
+interface AuthenticatedRequest extends Request {
+  user: {
+    id: string;
+    email: string;
+    username: string;
+    role: string;
+  };
+}
 
 @ApiTags("auth")
 @Controller("auth")
@@ -31,8 +41,8 @@ export class AuthController {
   @ApiOperation({ summary: "Login with email and password" })
   @ApiResponse({ status: 200, description: "Login successful" })
   @ApiResponse({ status: 401, description: "Invalid credentials" })
-  async login(@Request() req, @Body() loginDto: LoginDto) {
-    return this.authService.login(req.user);
+  async login(@Req() req: AuthenticatedRequest, @Body() loginDto: LoginDto) {
+    return this.authService.login(req.user as any);
   }
 
   @Post("register")
@@ -49,7 +59,7 @@ export class AuthController {
   @ApiOperation({ summary: "Get current user profile" })
   @ApiResponse({ status: 200, description: "Returns user profile" })
   @ApiResponse({ status: 401, description: "Unauthorized" })
-  async getProfile(@Request() req) {
+  async getProfile(@Req() req: AuthenticatedRequest) {
     return this.authService.getProfile(req.user.id);
   }
 }
