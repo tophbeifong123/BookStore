@@ -100,6 +100,32 @@ export class Book {
   @UpdateDateColumn({ type: "timestamptz", name: "updated_at" })
   updatedAt: Date;
 
+  // Approval fields
+  @ApiProperty({ description: "Approval status", enum: ApprovalStatus })
+  @Column({
+    type: "enum",
+    enum: ApprovalStatus,
+    default: ApprovalStatus.APPROVED,
+    name: "approval_status",
+  })
+  approvalStatus: ApprovalStatus;
+
+  @ApiProperty({ description: "Creator user ID" })
+  @Column({ type: "uuid", nullable: true, name: "created_by" })
+  createdBy: string;
+
+  @ApiProperty({ description: "Approver user ID" })
+  @Column({ type: "uuid", nullable: true, name: "approved_by" })
+  approvedBy: string;
+
+  @ApiProperty({ description: "Approval date" })
+  @Column({ type: "timestamptz", nullable: true, name: "approved_at" })
+  approvedAt: Date;
+
+  @ApiProperty({ description: "Rejection reason" })
+  @Column({ type: "text", nullable: true, name: "rejection_reason" })
+  rejectionReason: string;
+
   // Relations
   @ApiProperty({ description: "Associated tags", type: () => [Tag] })
   @ManyToMany(() => Tag, (tag) => tag.books, { cascade: true })
