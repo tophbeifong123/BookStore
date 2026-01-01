@@ -70,6 +70,52 @@ export class BooksService {
   }
 
   /**
+   * Get all books for admin (no status filter)
+   */
+  async findAllForAdmin(query: PaginationQueryDto) {
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      sortBy = "createdAt",
+      sortOrder = "DESC",
+    } = query;
+
+    const queryBuilder = this.bookRepository
+      .createQueryBuilder("book")
+      .leftJoinAndSelect("book.tags", "tag");
+
+    // Search
+    if (search) {
+      queryBuilder.where(
+        "book.title ILIKE :search OR book.author ILIKE :search",
+        { search: `%${search}%` }
+      );
+    }
+
+    // No status filter for admin - show all books
+
+    // Sorting
+    queryBuilder.orderBy(`book.${sortBy}`, sortOrder as "ASC" | "DESC");
+
+    // Pagination
+    const skip = (page - 1) * limit;
+    queryBuilder.skip(skip).take(limit);
+
+    const [data, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
    * Get books created by a specific user
    */
   async findByUser(userId: string, query: PaginationQueryDto) {

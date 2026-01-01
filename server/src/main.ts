@@ -12,9 +12,9 @@ async function bootstrap() {
   const apiPrefix = configService.get<string>("API_PREFIX", "api");
   app.setGlobalPrefix(apiPrefix);
 
-  // CORS
+  // CORS - Allow all localhost ports for development
   app.enableCors({
-    origin: ["http://localhost:5173", "http://localhost:8000"],
+    origin: /^http:\/\/localhost:\d+$/,
     credentials: true,
   });
 

@@ -105,7 +105,7 @@ export default function BookDetailPage() {
               <div className="flex flex-wrap gap-6">
                 <div className="flex items-center gap-2">
                   <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                  <span className="font-semibold">{book.rating.toFixed(1)}</span>
+                  <span className="font-semibold">{Number(book.rating || 0).toFixed(1)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Eye className="text-muted-foreground h-5 w-5" />

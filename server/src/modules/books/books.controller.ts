@@ -44,6 +44,16 @@ export class BooksController {
     return this.booksService.findAll(query);
   }
 
+  @Get("admin/all")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Get all books for admin (no status filter)" })
+  @ApiResponse({ status: 200, description: "Returns all books" })
+  async findAllForAdmin(@Query() query: PaginationQueryDto) {
+    return this.booksService.findAllForAdmin(query);
+  }
+
   @Get("my-books")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

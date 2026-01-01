@@ -19,6 +19,7 @@ import NotFoundPage from "./routes/not-found";
 // Admin routes
 import AdminLayout from "./routes/admin/layout";
 import AdminDashboard from "./routes/admin/index";
+import AdminBooksPage from "./routes/admin/books";
 import AdminUsersPage from "./routes/admin/users";
 import AdminApprovalsPage from "./routes/admin/approvals";
 
@@ -26,7 +27,6 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
-    errorElement: <NotFoundPage />,
     children: [
       {
         index: true,
@@ -68,6 +68,10 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <AdminDashboard />,
+          },
+          {
+            path: "books",
+            element: <AdminBooksPage />,
           },
           {
             path: "users",

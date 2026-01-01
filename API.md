@@ -87,6 +87,7 @@ Content-Type: application/json
 | Method   | Endpoint             | Description               | Auth     |
 | -------- | -------------------- | ------------------------- | -------- |
 | `GET`    | `/books`             | Get all books (paginated) | ❌       |
+| `GET`    | `/books/admin/all`   | Get all books for admin   | ✅ Admin |
 | `GET`    | `/books/featured`    | Get featured books        | ❌       |
 | `GET`    | `/books/my-books`    | Get current user's books  | ✅       |
 | `GET`    | `/books/pending`     | Get pending books         | ✅ Admin |

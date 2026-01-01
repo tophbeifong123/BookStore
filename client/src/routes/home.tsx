@@ -171,7 +171,7 @@ export default function HomePage() {
                         {book.title}
                       </h3>
                       <p className="text-muted-foreground text-xs">
-                        {book.status} • {book.rating.toFixed(1)} ★
+                        {book.status} • {Number(book.rating || 0).toFixed(1)} ★
                       </p>
                     </CardFooter>
                   </Card>
