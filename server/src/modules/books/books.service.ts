@@ -226,4 +226,78 @@ export class BooksService {
     await this.bookRepository.increment({ id }, "viewCount", 1);
     return this.findOne(id);
   }
+
+  /**
+   * Get pending books for approval (Admin only)
+   */
+  async findPending(query: PaginationQueryDto) {
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      sortBy = "createdAt",
+      sortOrder = "DESC",
+    } = query;
+
+    const queryBuilder = this.bookRepository
+      .createQueryBuilder("book")
+      .leftJoinAndSelect("book.tags", "tag")
+      .where("book.approvalStatus = :status", { status: "pending" });
+
+    // Search
+    if (search) {
+      queryBuilder.andWhere(
+        "(book.title ILIKE :search OR book.author ILIKE :search)",
+        { search: `%${search}%` }
+      );
+    }
+
+    // Sorting
+    queryBuilder.orderBy(`book.${sortBy}`, sortOrder as "ASC" | "DESC");
+
+    // Pagination
+    const skip = (page - 1) * limit;
+    queryBuilder.skip(skip).take(limit);
+
+    const [data, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Approve a book (Admin only)
+   */
+  async approve(id: string, adminId: string) {
+    const book = await this.findOne(id);
+
+    book.approvalStatus = "approved" as any;
+    book.approvedBy = adminId;
+    book.approvedAt = new Date();
+
+    return this.bookRepository.save(book);
+  }
+
+  /**
+   * Reject a book (Admin only)
+   */
+  async reject(id: string, adminId: string, reason?: string) {
+    const book = await this.findOne(id);
+
+    book.approvalStatus = "rejected" as any;
+    book.approvedBy = adminId;
+    book.approvedAt = new Date();
+    if (reason) {
+      book.rejectionReason = reason;
+    }
+
+    return this.bookRepository.save(book);
+  }
 }

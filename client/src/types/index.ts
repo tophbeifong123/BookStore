@@ -54,6 +54,10 @@ export interface Book {
   approvalStatus: ApprovalStatus;
   createdBy?: string;
   tags: Tag[];
+  publishedAt?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  rejectionReason?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -73,7 +77,7 @@ export interface CreateBookInput {
   tagIds?: string[];
 }
 
-export interface UpdateBookInput extends Partial<CreateBookInput> {}
+export type UpdateBookInput = Partial<CreateBookInput>;
 
 // ============ Tag Types ============
 
@@ -94,7 +98,7 @@ export interface CreateTagInput {
   color?: string;
 }
 
-export interface UpdateTagInput extends Partial<CreateTagInput> {}
+export type UpdateTagInput = Partial<CreateTagInput>;
 
 // ============ Chapter Types ============
 

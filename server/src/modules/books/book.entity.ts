@@ -105,7 +105,7 @@ export class Book {
   @Column({
     type: "enum",
     enum: ApprovalStatus,
-    default: ApprovalStatus.APPROVED,
+    default: ApprovalStatus.PENDING,
     name: "approval_status",
   })
   approvalStatus: ApprovalStatus;

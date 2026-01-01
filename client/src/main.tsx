@@ -16,6 +16,12 @@ import LoginPage from "./routes/auth/login";
 import RegisterPage from "./routes/auth/register";
 import NotFoundPage from "./routes/not-found";
 
+// Admin routes
+import AdminLayout from "./routes/admin/layout";
+import AdminDashboard from "./routes/admin/index";
+import AdminUsersPage from "./routes/admin/users";
+import AdminApprovalsPage from "./routes/admin/approvals";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -54,6 +60,24 @@ const router = createBrowserRouter([
       {
         path: "my-books",
         element: <MyBooksPage />,
+      },
+      {
+        path: "admin",
+        element: <AdminLayout />,
+        children: [
+          {
+            index: true,
+            element: <AdminDashboard />,
+          },
+          {
+            path: "users",
+            element: <AdminUsersPage />,
+          },
+          {
+            path: "approvals",
+            element: <AdminApprovalsPage />,
+          },
+        ],
       },
       {
         path: "login",

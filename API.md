@@ -84,16 +84,20 @@ Content-Type: application/json
 
 ### Endpoints
 
-| Method   | Endpoint            | Description               | Auth     |
-| -------- | ------------------- | ------------------------- | -------- |
-| `GET`    | `/books`            | Get all books (paginated) | ❌       |
-| `GET`    | `/books/featured`   | Get featured books        | ❌       |
-| `GET`    | `/books/slug/:slug` | Get book by slug          | ❌       |
-| `GET`    | `/books/:id`        | Get book by ID            | ❌       |
-| `POST`   | `/books`            | Create book               | ✅       |
-| `PATCH`  | `/books/:id`        | Update book               | ✅       |
-| `DELETE` | `/books/:id`        | Delete book               | ✅ Admin |
-| `POST`   | `/books/:id/view`   | Increment view count      | ❌       |
+| Method   | Endpoint             | Description               | Auth     |
+| -------- | -------------------- | ------------------------- | -------- |
+| `GET`    | `/books`             | Get all books (paginated) | ❌       |
+| `GET`    | `/books/featured`    | Get featured books        | ❌       |
+| `GET`    | `/books/my-books`    | Get current user's books  | ✅       |
+| `GET`    | `/books/pending`     | Get pending books         | ✅ Admin |
+| `GET`    | `/books/slug/:slug`  | Get book by slug          | ❌       |
+| `GET`    | `/books/:id`         | Get book by ID            | ❌       |
+| `POST`   | `/books`             | Create book               | ✅       |
+| `PATCH`  | `/books/:id`         | Update book               | ✅       |
+| `PATCH`  | `/books/:id/approve` | Approve book              | ✅ Admin |
+| `PATCH`  | `/books/:id/reject`  | Reject book               | ✅ Admin |
+| `DELETE` | `/books/:id`         | Delete book               | ✅       |
+| `POST`   | `/books/:id/view`    | Increment view count      | ❌       |
 
 ### Get All Books
 
@@ -206,6 +210,80 @@ enum ApprovalStatus {
   PENDING = "pending", // User creates -> pending
   APPROVED = "approved", // Admin approves
   REJECTED = "rejected", // Admin rejects
+}
+```
+
+### Get Pending Books (Admin Only)
+
+```http
+GET /api/books/pending?page=1&limit=10
+Authorization: Bearer <token>
+```
+
+**Response:**
+
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "title": "Pending Book",
+      "author": "Author Name",
+      "approvalStatus": "pending",
+      "status": "draft",
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "total": 5,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 1
+  }
+}
+```
+
+### Approve Book (Admin Only)
+
+```http
+PATCH /api/books/{bookId}/approve
+Authorization: Bearer <token>
+```
+
+**Response:**
+
+```json
+{
+  "id": "uuid",
+  "title": "Approved Book",
+  "approvalStatus": "approved",
+  "approvedBy": "admin-uuid",
+  "approvedAt": "2025-01-01T12:00:00.000Z"
+}
+```
+
+### Reject Book (Admin Only)
+
+```http
+PATCH /api/books/{bookId}/reject
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "reason": "Does not meet content guidelines"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": "uuid",
+  "title": "Rejected Book",
+  "approvalStatus": "rejected",
+  "approvedBy": "admin-uuid",
+  "approvedAt": "2025-01-01T12:00:00.000Z",
+  "rejectionReason": "Does not meet content guidelines"
 }
 ```
 

@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { useBooks, useDeleteBook, useAuth } from "@/hooks";
+import { useMyBooks, useDeleteBook, useAuth } from "@/hooks";
 import {
   BookOpen,
   Plus,
@@ -40,17 +40,16 @@ const APPROVAL_STATUS: Record<
 
 export default function MyBooksPage() {
   const navigate = useNavigate();
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const deleteBook = useDeleteBook();
 
   // Fetch user's books
-  const { data: booksData, isLoading } = useBooks({
+  const { data: booksData, isLoading } = useMyBooks({
     page: 1,
     limit: 50,
   });
 
-  // Filter books created by current user
-  const myBooks = booksData?.data.filter((book: Book) => book.createdBy === user?.id) ?? [];
+  const myBooks = booksData?.data ?? [];
 
   // Redirect if not authenticated
   useEffect(() => {

@@ -21,7 +21,7 @@ export function Navbar() {
   const navigate = useNavigate();
 
   return (
-    <header className="bg-background/95 sticky top-0 z-50 border-b backdrop-blur-md">
+    <header className="bg-background/95 sticky top-3 z-50 mx-auto w-3/4 rounded-full border backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">

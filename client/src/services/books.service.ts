@@ -77,4 +77,3 @@ export const booksService = {
 };
 
 export default booksService;
-```

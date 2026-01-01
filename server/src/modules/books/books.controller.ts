@@ -28,6 +28,9 @@ import { UpdateBookDto } from "./dto/update-book.dto";
 import { PaginationQueryDto } from "../../common/dto/pagination-query.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { OptionalJwtAuthGuard } from "../auth/guards/optional-jwt-auth.guard";
+import { RolesGuard } from "../auth/guards/roles.guard";
+import { Roles } from "../auth/decorators/roles.decorator";
+import { UserRole } from "../users/user.entity";
 
 @ApiTags("books")
 @Controller("books")
@@ -134,5 +137,44 @@ export class BooksController {
   })
   async incrementView(@Param("id", ParseUUIDPipe) id: string) {
     return this.booksService.incrementViewCount(id);
+  }
+
+  @Get("pending")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Get pending books (Admin only)" })
+  @ApiResponse({ status: 200, description: "Returns pending books" })
+  async findPending(@Query() query: PaginationQueryDto) {
+    return this.booksService.findPending(query);
+  }
+
+  @Patch(":id/approve")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Approve a book (Admin only)" })
+  @ApiParam({ name: "id", description: "Book UUID" })
+  @ApiResponse({ status: 200, description: "Book approved" })
+  async approve(
+    @Param("id", ParseUUIDPipe) id: string,
+    @Request() req: { user: { id: string } }
+  ) {
+    return this.booksService.approve(id, req.user.id);
+  }
+
+  @Patch(":id/reject")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Reject a book (Admin only)" })
+  @ApiParam({ name: "id", description: "Book UUID" })
+  @ApiResponse({ status: 200, description: "Book rejected" })
+  async reject(
+    @Param("id", ParseUUIDPipe) id: string,
+    @Request() req: { user: { id: string } },
+    @Body("reason") reason?: string
+  ) {
+    return this.booksService.reject(id, req.user.id, reason);
   }
 }
